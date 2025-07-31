@@ -1,0 +1,287 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arielsk8ts - Plant-Based Lifestyle</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <style>
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: #1a3c34;
+            color: #f5f5f5;
+            overflow-x: hidden;
+        }
+        .vine-pattern {
+            position: absolute;
+            opacity: 0.1;
+            z-index: -1;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .arielsk8ts-header {
+            font-size: 3.5rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            background: linear-gradient(to right, #f4a261, #e76f51);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .leaf, .flower, .fruit {
+            position: absolute;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+    <!-- SVG Vine Patterns -->
+    <svg class="vine-pattern top-0 left-0 w-1/4" viewBox="0 0 200 200">
+        <path d="M10 10c20 40 60 60 90 20s40-80 80-60" stroke="#2a9d8f" stroke-width="2" fill="none"/>
+    </svg>
+    <svg class="vine-pattern bottom-0 right-0 w-1/4" viewBox="0 0 200 200">
+        <path d="M190 190c-20-40-60-60-90-20s-40 80-80 60" stroke="#2a9d8f" stroke-width="2" fill="none"/>
+    </svg>
+
+    <!-- Header -->
+    <header class="text-center py-8">
+        <h1 class="arielsk8ts-header">Arielsk8ts</h1>
+        <p class="text-lg text-[#e9c46a] mt-2">Vibrant Plant-Based Living</p>
+    </header>
+
+    <!-- Navigation -->
+    <nav class="flex justify-center space-x-4 mb-8">
+        <button class="tab-btn px-4 py-2 text-[#f5f5f5] bg-[#2a9d8f] rounded hover:bg-[#e76f51] transition-colors" data-tab="about">About</button>
+        <button class="tab-btn px-4 py-2 text-[#f5f5f5] bg-[#2a9d8f] rounded hover:bg-[#e76f51] transition-colors" data-tab="cookbook">Cookbook</button>
+        <button class="tab-btn px-4 py-2 text-[#f5f5f5] bg-[#2a9d8f] rounded hover:bg-[#e76f51] transition-colors" data-tab="recipe">Recipe</button>
+        <button class="tab-btn px-4 py-2 text-[#f5f5f5] bg-[#2a9d8f] rounded hover:bg-[#e76f51] transition-colors" data-tab="founders">Meet the Founders</button>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 flex-grow">
+        <section id="about" class="tab-content active">
+            <h2 class="text-3xl font-bold text-[#f4a261] mb-4">About Arielsk8ts</h2>
+            <p class="text-lg mb-4">
+                Arielsk8ts is a vibrant force in the plant-based lifestyle scene, captivating millions on TikTok with infectious energy and a passion for sustainable living. Known for dynamic content that blends humor, creativity, and eco-conscious values, Arielsk8ts has become a beacon for those seeking a flavorful, cruelty-free life. Partnered with the enigmatic Mr. Question Mark, this prototype venture is redefining how we connect with food and nature, one viral video at a time.
+            </p>
+            <p class="text-lg">
+                With a verified TikTok presence, Arielsk8ts inspires a global community to embrace plant-based living with style and swagger. Stay tuned for more as this dynamic duo prepares to launch a groundbreaking cookbook that promises to revolutionize your kitchen.
+            </p>
+        </section>
+
+        <section id="cookbook" class="tab-content">
+            <h2 class="text-3xl font-bold text-[#f4a261] mb-4">Our Upcoming Cookbook</h2>
+            <p class="text-lg mb-4">
+                Get ready for a culinary adventure with Arielsk8ts and Mr. Question Mark’s upcoming plant-based cookbook! This isn’t just a collection of recipes—it’s a vibrant celebration of flavors, sustainability, and creativity. Packed with innovative dishes that make plant-based eating accessible and exciting, this book will transform your meals into moments of joy.
+            </p>
+            <p class="text-lg">
+                From hearty mains to decadent desserts, our cookbook is designed to inspire both seasoned vegans and curious newcomers. Expect bold flavors, wildlife-inspired aesthetics, and a touch of Arielsk8ts’ signature flair. Stay tuned for the release date and pre-order details!
+            </p>
+        </section>
+
+        <section id="recipe" class="tab-content">
+            <h2 class="text-3xl font-bold text-[#f4a261] mb-4">Sweet Potato Brownie Recipe</h2>
+            <p class="text-lg mb-4">Indulge in these fudgy, plant-based sweet potato brownies that are as nutritious as they are delicious. Perfect for satisfying your sweet tooth the Arielsk8ts way!</p>
+            <h3 class="text-xl font-semibold text-[#e9c46a] mb-2">Ingredients</h3>
+            <ul class="list-disc list-inside mb-4">
+                <li>2 medium sweet potatoes, mashed (about 1.5 cups)</li>
+                <li>1/2 cup almond butter</li>
+                <li>1/4 cup maple syrup</li>
+                <li>1/3 cup cocoa powder</li>
+                <li>1/4 cup almond flour</li>
+                <li>1 tsp vanilla extract</li>
+                <li>1/2 tsp baking powder</li>
+                <li>1/4 tsp salt</li>
+                <li>1/2 cup dark chocolate chips (vegan)</li>
+            </ul>
+            <h3 class="text-xl font-semibold text-[#e9c46a] mb-2">Instructions</h3>
+            <ol class="list-decimal list-inside mb-4">
+                <li>Preheat oven to 350°F (175°C). Line an 8x8-inch baking pan with parchment paper.</li>
+                <li>In a large bowl, mix mashed sweet potatoes, almond butter, maple syrup, and vanilla extract until smooth.</li>
+                <li>Add cocoa powder, almond flour, baking powder, and salt. Stir until well combined.</li>
+                <li>Fold in chocolate chips, then spread the batter evenly in the prepared pan.</li>
+                <li>Bake for 25-30 minutes, or until a toothpick comes out clean. Let cool before slicing.</li>
+                <li>Serve and enjoy the plant-based goodness!</li>
+            </ol>
+        </section>
+
+        <section id="founders" class="tab-content">
+            <h2 class="text-3xl font-bold text-[#f4a261] mb-4">Meet the Founders</h2>
+            <div class="mb-6">
+                <h3 class="text-xl font-semibold text-[#e9c46a] mb-2">Ariel - The Visionary</h3>
+                <p class="text-lg">
+                    Ariel is the heart and soul of Arielsk8ts, a TikTok sensation whose vibrant energy and plant-based passion have inspired millions. With a knack for creating engaging content, Ariel brings creativity and authenticity to the forefront, making sustainable living accessible and exciting.
+                </p>
+            </div>
+            <div>
+                <h3 class="text-xl font-semibold text-[#e9c46a] mb-2">Mr. Question Mark - BADASS MOTHER TRUCKER</h3>
+                <p class="text-lg">
+                    The mysterious co-founder, Mr. Question Mark, is the strategic genius behind Arielsk8ts’ prototype ventures. Known as the “BADASS MOTHER TRUCKER,” he combines bold innovation with a deep commitment to plant-based living, driving the brand’s mission to revolutionize the culinary world.
+                </p>
+            </div>
+        </section>
+    </main>
+
+    <!-- Newsletter Signup -->
+    <section class="container mx-auto px-4 py-8">
+        <h2 class="text-2xl font-bold text-[#f4a261] mb-4 text-center">Join Our Newsletter</h2>
+        <form id="newsletter-form" class="flex flex-col sm:flex-row justify-center items-center gap-4">
+            <input type="email" id="email" placeholder="Enter your email" class="px-4 py-2 rounded bg-[#264653] text-[#f5f5f5] focus:outline-none focus:ring-2 focus:ring-[#e76f51]">
+            <button type="submit" class="px-6 py-2 bg-[#e76f51] text-[#f5f5f5] rounded hover:bg-[#f4a261] transition-colors">Sign Up</button>
+        </form>
+        <p id="form-message" class="text-center mt-2 text-[#e9c46a]"></p>
+    </section>
+
+    <!-- Social Links -->
+    <footer class="text-center py-8">
+        <h3 class="text-xl font-semibold text-[#f4a261] mb-4">Follow Us</h3>
+        <div class="flex justify-center space-x-4">
+            <a href="https://www.tiktok.com/@arielsk8ts" target="_blank" class="text-[#e9c46a] hover:text-[#e76f51] transition-colors">TikTok</a>
+            <a href="https://www.instagram.com/arielsk8ts" target="_blank" class="text-[#e9c46a] hover:text-[#e76f51] transition-colors">Instagram</a>
+            <a href="https://www.youtube.com/@arielsk8ts" target="_blank" class="text-[#e9c46a] hover:text-[#e76f51] transition-colors">YouTube</a>
+        </div>
+    </footer>
+
+    <!-- Animation Elements -->
+    <div class="leaf" style="top: 10%; left: 5%;"><svg width="20" height="20" viewBox="0 0 20 20"><path d="M10 0C5 5 5 15 10 20C15 15 15 5 10 0" fill="#2a9d8f"/></svg></div>
+    <div class="leaf" style="top: 20%; right: 5%;"><svg width="20" height="20" viewBox="0 0 20 20"><path d="M10 0C5 5 5 15 10 20C15 15 15 5 10 0" fill="#2a9d8f"/></svg></div>
+    <div class="flower" style="top: 30%; left: 10%;"><svg width="30" height="30" viewBox="0 0 30 30"><circle cx="15" cy="15" r="10" fill="#e76f51"/></svg></div>
+    <div class="fruit" style="top: 40%; right: 10%;"><svg width="25" height="25" viewBox="0 0 25 25"><circle cx="12.5" cy="12.5" r="10" fill="#f4a261"/></svg></div>
+
+    <script>
+        // Tab Navigation
+        const tabs = document.querySelectorAll('.tab-btn');
+        const contents = document.querySelectorAll('.tab-content');
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const tabId = tab.getAttribute('data-tab');
+                contents.forEach(content => {
+                    content.classList.remove('active');
+                    if (content.id === tabId) {
+                        content.classList.add('active');
+                        gsap.fromTo(content, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.5 });
+                    }
+                });
+                tabs.forEach(t => t.classList.remove('bg-[#e76f51]'));
+                tab.classList.add('bg-[#e76f51]');
+            });
+        });
+
+        // Newsletter Form Validation
+        document.getElementById('newsletter-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const message = document.getElementById('form-message');
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (emailRegex.test(email)) {
+                message.textContent = 'Thank you for signing up!';
+                message.classList.add('text-[#2a9d8f]');
+                document.getElementById('email').value = '';
+            } else {
+                message.textContent = 'Please enter a valid email address.';
+                message.classList.add('text-[#e76f51]');
+            }
+            setTimeout(() => { message.textContent = ''; }, 3000);
+        });
+
+        // GSAP Animations
+        const tl = gsap.timeline({ defaults: { ease: 'power2.out' } });
+
+        // Welcome Sequence
+        tl.from('.arielsk8ts-header', { y: -50, opacity: 0, duration: 1 })
+          .from('nav', { y: -20, opacity: 0, duration: 0.8 }, '-=0.5')
+          .from('.tab-content.active', { opacity: 0, y: 20, duration: 0.8 });
+
+        // Falling Leaves
+        gsap.to('.leaf', {
+            y: '+=200',
+            rotation: 360,
+            duration: 5,
+            repeat: 1,
+            ease: 'none',
+            onComplete: () => gsap.set('.leaf', { display: 'none' })
+        });
+
+        // Crawling Vines
+        gsap.to('.vine-pattern', {
+            x: '+=20',
+            y: '+=20',
+            duration: 5,
+            repeat: 1,
+            ease: 'sine.inOut',
+            onComplete: () => gsap.set('.vine-pattern', { display: 'none' })
+        });
+
+        // Pulsating Flowers
+        gsap.to('.flower', {
+            scale: 1.2,
+            duration: 1,
+            repeat: 5,
+            yoyo: true,
+            ease: 'sine.inOut',
+            onComplete: () => gsap.set('.flower', { display: 'none' })
+        });
+
+        // Rotating Fruits
+        gsap.to('.fruit', {
+            rotation: 360,
+            duration: 3,
+            repeat: 3,
+            ease: 'none',
+            onComplete: () => gsap.set('.fruit', { display: 'none' })
+        });
+
+        // Stop Animations After 10 Seconds
+        setTimeout(() => {
+            gsap.killTweensOf(['.leaf', '.vine-pattern', '.flower', '.fruit']);
+            gsap.set(['.leaf', '.vine-pattern', '.flower', '.fruit'], { display: 'none' });
+        }, 10000);
+    </script>
+</body>
+</html>
